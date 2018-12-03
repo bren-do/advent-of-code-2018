@@ -1305,24 +1305,21 @@
   (repeat (apply max (map get-board-height input)) (repeat (apply max (map get-board-width input)) nil)))
 
 (defn fill-squares
-  [squares]
-  squares
-  (map #(if % \x \a) squares))
+  [squares num]
+  (map #(if % \x num) squares))
 
 (defn fill-row
-  [row {:keys [from-left width]}]
-  (let [middle (fill-squares (take width (drop from-left row)))]
-    (concat (take from-left row)
-            middle
-            (drop (+ from-left width) row))))
+  [row {:keys [from-left width num]}]
+  (concat (take from-left row)
+          (fill-squares (take width (drop from-left row)) num)
+          (drop (+ from-left width) row)))
 
 
 (defn fill-column
   [board {:keys [from-top height] :as instructions}]
-  (let [middle (doall (map #(fill-row % instructions) (take height (drop from-top board))))]
-    (concat (take from-top board)
-            middle
-            (drop (+ from-top height) board))))
+  (concat (take from-top board)
+          (doall (map #(fill-row % instructions) (take height (drop from-top board))))
+          (drop (+ from-top height) board)))
 
 (defn fill-instructions
   [board instructions]
@@ -1337,3 +1334,29 @@
   [board]
   (apply + (keep (fn [x]
                    (get (frequencies x) \x)) board)))
+
+
+
+;; PART 2
+
+
+(defn overlapping-squares-in-row?
+  [squares]
+  (some #(= \x %) squares))
+
+(defn check-row
+  [row {:keys [from-left width num]}]
+  (overlapping-squares-in-row? (take width (drop from-left row))))
+
+
+(defn overlapping-squares?
+  [board {:keys [from-top height] :as instructions}]
+  (seq (doall (keep #(check-row % instructions) (take height (drop from-top board))))))
+
+
+(defn find-non-overlapping-instructions
+  [board input]
+  (reduce #(if %
+             %
+             (when-not (overlapping-squares? board %2)
+               %2)) nil input))
