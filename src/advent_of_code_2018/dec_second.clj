@@ -286,21 +286,20 @@
    "fzgij"
    "fgjij"])
 
+;; if we return a list that is the result of comparing what each string shares
+;; at same positions with every other string, the string in the resulting list that
+;; is only one character shorter than an id will be the string of characters the two
+;; ids that differ by only one character share.
 
-
-(defn remove-chars-that-aren't-equal-at-each-position
-  [a b]
-  (filter identity (map #(when (= % %2) %) a b)))
-
-(defn find-id
+(defn find-string-of-shared-characters-between-ids-differing-by-one-character
   [x]
   (first
-   (mapcat
-    (fn [outer-str]
-      (keep
-       (fn [inner-str]
-         (when
-             (= (count (remove-chars-that-aren't-equal-at-each-position outer-str inner-str)) (dec (count outer-str))) ;; when we remove chars that aren't equal at each position the resulting sequence is smaller by only one.
-           (apply str (remove-chars-that-aren't-equal-at-each-position outer-str inner-str)))) ;; find resulting string of removing chars that aren't equal at each position
-       x))
-    x)))
+   (filter
+    #(= (dec (count (first x))) (count %))
+    (mapcat
+     (fn [outer-str]
+       (keep
+        (fn [inner-str]
+          (apply str (filter identity (map #(when (= % %2) %) outer-str inner-str))))
+        x))
+     x))))
