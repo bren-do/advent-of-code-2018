@@ -300,10 +300,7 @@
       (keep
        (fn [inner-str]
          (when
-             (and
-              (not= outer-str inner-str) ;; strings aren't equal
-              (#{0 1} (count (clojure.set/difference (set outer-str) (set inner-str)))) ;; there's at most one character different between the two strings
-              (= (count (remove-chars-that-aren't-equal-at-each-position outer-str inner-str)) (dec (count outer-str)))) ;; when we remove chars that aren't equal at each position the resulting sequence is smaller by only one.
+             (= (count (remove-chars-that-aren't-equal-at-each-position outer-str inner-str)) (dec (count outer-str))) ;; when we remove chars that aren't equal at each position the resulting sequence is smaller by only one.
            (apply str (remove-chars-that-aren't-equal-at-each-position outer-str inner-str)))) ;; find resulting string of removing chars that aren't equal at each position
        x))
     x)))
