@@ -1,6 +1,7 @@
 (ns advent-of-code-2018.dec-third)
 
-;; just try conjing as you move left to right?
+;; all of this code has very poor naming
+;; read at own peril
 
 (defn ->instructions
   [num from-left from-top width height]
