@@ -300,7 +300,7 @@
     #(= (-> x first count dec) (count %))
     (mapcat
      (fn [outer-str]
-       (keep
+       (map
         (fn [inner-str]
           (apply str (filter identity (map #(when (= % %2) %) outer-str inner-str))))
         x))
