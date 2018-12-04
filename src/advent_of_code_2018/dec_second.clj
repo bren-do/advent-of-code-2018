@@ -286,11 +286,12 @@
    "fzgij"
    "fgjij"])
 
-;; if we return a list that is the result of iterating through all strings and
-;; returning the characters equal at each position between all other strings,
-;; the string in the resulting list that is only one character shorter than an id
-;; will be the string of shared characters between two ids that differ by only one
-;; character.
+;; if we return a list that is the result of comparing each string with every
+;; other string and returning the characters equal at each position between
+;; those strings,
+;; the string in the resulting list that is only one character
+;; shorter than an id will be the string of shared characters between two ids
+;; that differ by only one character.
 
 (defn find-string-of-shared-characters-between-ids-differing-by-one-character
   [x]
