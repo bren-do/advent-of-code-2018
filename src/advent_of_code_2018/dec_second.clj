@@ -287,15 +287,15 @@
    "fgjij"])
 
 ;; if we return a list that is the result of comparing what each string shares
-;; at same positions with every other string, the string in the resulting list that
-;; is only one character shorter than an id will be the string of characters the two
-;; ids that differ by only one character share.
+;; at the same position with every other string, the string in the resulting list that
+;; is only one character shorter than an id will be the string of shared characters
+;; between two ids that differ by only one character.
 
 (defn find-string-of-shared-characters-between-ids-differing-by-one-character
   [x]
   (first
    (filter
-    #(= (dec (count (first x))) (count %))
+    #(= (-> x first count dec) (count %))
     (mapcat
      (fn [outer-str]
        (keep
