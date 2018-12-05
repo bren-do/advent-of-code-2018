@@ -8,17 +8,15 @@
 
 (defn split-into-chunks
   [test-input]
-  (->> test-input
-       (partition-by (comp  clojure.string/upper-case str))))
+  (partition-by (comp clojure.string/upper-case str) test-input))
 
 (defn react
   [letters]
   (loop [f [] letters letters]
     (if (< (count letters) 2)
       (concat f letters)
-      (if-let [head (when (= (first letters) (second letters))
-                      (take 2 letters))]
-        (recur (concat f [(first letters)]) (rest letters))
+      (if (= (first letters) (second letters))
+        (recur (conj f (first letters)) (rest letters))
         (recur f (drop 2 letters))))))
 
 
@@ -36,8 +34,8 @@
   ([]
    (part2 real-input))
   ([input]
-   "Wait like 2 minutes"
-   (map (fn [unit]
-          (->> input
-               (remove #(#{unit (char (- (int unit) 32))} %))
-               part1)) (take 2 (seq "abcdefghijklmnopqrstuvwxyz")))))
+   "Wait like 20 minutes"
+   (apply min (map (fn [unit]
+                     (->> input
+                          (remove #(#{unit (char (- (int unit) 32))} %))
+                          part1)) (seq "abcdefghijklmnopqrstuvwxyz")))))
