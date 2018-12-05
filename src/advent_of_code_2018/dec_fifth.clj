@@ -6,9 +6,11 @@
 (def real-input
   (seq (clojure.string/trim (slurp (clojure.java.io/resource "dec_fifth.txt")))))
 
-(defn split-into-chunks
-  [test-input]
-  (partition-by (comp clojure.string/upper-case str) test-input))
+(def split-into-chunks
+  (partition-by #(let [int-val (int %)]
+                   (if (< int-val 96)
+                     (+ int-val 32)
+                     int-val))))
 
 (defn react
   [letters]
@@ -23,8 +25,9 @@
 (defn part1
   [input]
   (loop [unreacted input]
-    (let [chunks (split-into-chunks unreacted)
-          reacted (flatten (map react chunks))]
+    (let [reacted (sequence (comp split-into-chunks
+                                  (map react)
+                                  (mapcat identity)) unreacted)]
       (if (= (count reacted) (count unreacted))
         (count reacted)
         (recur reacted)))))
