@@ -4,7 +4,7 @@
   (seq "dabAcCaCBAcCcaDA"))
 
 (def real-input
-  (seq (slurp (clojure.java.io/resource "dec_fifth.txt"))))
+  (seq (clojure.string/trim (slurp (clojure.java.io/resource "dec_fifth.txt")))))
 
 (defn split-into-chunks
   [test-input]
@@ -34,7 +34,7 @@
   ([]
    (part2 real-input))
   ([input]
-   "Wait like 20 minutes"
+   "Wait like 13 minutes"
    (apply min (map (fn [unit]
                      (->> input
                           (remove #(#{unit (char (- (int unit) 32))} %))
