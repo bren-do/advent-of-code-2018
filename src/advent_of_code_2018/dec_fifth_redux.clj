@@ -33,7 +33,6 @@
   [input]
   (loop [unreacted input]
     (let [reacted (react unreacted)]
-      (println "Reacted: " (count reacted) "Unreacted: " (count unreacted))
       (if (= (count reacted) (count unreacted))
         (count reacted)
         (recur reacted)))))
