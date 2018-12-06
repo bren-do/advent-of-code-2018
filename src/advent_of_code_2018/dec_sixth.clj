@@ -58,6 +58,21 @@
            (map (partial fill-in-cell points j) (range (count row))))
          board (range (count board)))))
 
+(defn fill-in-safe-cell
+  [points j i]
+  (let [distances (sort-by :distance (map (partial calculate-manhattan-distance j i) points))]
+    (cond
+      (< (apply + (map :distance distances)) 10000) \#
+      :else \.)))
+
+(defn fill-in-safe-areas
+  [points]
+  (let [board (make-blank-board points)]
+    (map (fn [row j]
+           (map (partial fill-in-safe-cell points j) (range (count row))))
+         board (range (count board)))))
+
+
 (defn determine-biggest-area-for-row
   [row j]
   (let [fi (first row)
@@ -76,7 +91,13 @@
   [board]
   (apply merge-with + (map determine-biggest-area-for-row board (range (count board)))))
 
+(defn determine-safe-area-of-row
+  [row]
+  (count (filter #(= \# %) row)))
 
+(defn determine-safe-area
+  [board]
+  (apply + (map determine-safe-area-of-row board)))
 
 (defn part1
   [data]
@@ -86,4 +107,14 @@
        determine-biggest-area
        (sort-by second)
        reverse
-       (remove #(= ##Inf (second %)))))
+       (remove #(= ##Inf (second %)))
+       first
+       second))
+
+
+(defn part2
+  [data]
+  (->> data
+       process-data
+       fill-in-safe-areas
+       determine-safe-area))
