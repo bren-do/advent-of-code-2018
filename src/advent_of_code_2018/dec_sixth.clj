@@ -24,24 +24,66 @@
 (defn get-board-height
   [input]
   (apply max (map (fn [points]
-                    (second (:coordinates points))) input)))
+                    (inc (second (:coordinates points)))) input)))
 
 (defn get-board-width
   [input]
   (apply max (map (fn [points]
-                    (first (:coordinates points))) input)))
+                    (inc (first (:coordinates points)))) input)))
 
 (defn make-blank-board
   [input]
   (repeat (get-board-height input) (repeat (get-board-width input) nil)))
 
+(defn calculate-manhattan-distance
+  [j i {:keys [name coordinates] :as points}]
+  (let [x (first coordinates)
+        y (second coordinates)]
+    {:name name
+     :distance (+ (Math/abs (- i x))
+                  (Math/abs (- j y)))}))
+
 (defn fill-in-cell
-  [points i j]
-  "O")
+  [points j i]
+  (let [distances (sort-by :distance (map (partial calculate-manhattan-distance j i) points))
+        [a b] (take 2 distances)]
+    (cond
+      (= (:distance a) (:distance b)) \.
+      :else (:name a))))
 
 (defn fill-in-areas
   [points]
   (let [board (make-blank-board points)]
-    (map (fn [row i]
-           (map (partial fill-in-cell points i) (range (count row))))
+    (map (fn [row j]
+           (map (partial fill-in-cell points j) (range (count row))))
          board (range (count board)))))
+
+(defn determine-biggest-area-for-row
+  [row j]
+  (let [fi (first row)
+        li (last row)]
+    (merge-with +
+                {fi Double/POSITIVE_INFINITY}
+                {li Double/POSITIVE_INFINITY}
+                (reduce (fn [coll name]
+                          (if (= name \.)
+                            coll
+                            (if (= j 0)
+                              (assoc coll name Double/POSITIVE_INFINITY)
+                              (update coll name (fnil inc 0))))) {} (drop-last 1 (drop 1 row))))))
+
+(defn determine-biggest-area
+  [board]
+  (apply merge-with + (map determine-biggest-area-for-row board (range (count board)))))
+
+
+
+(defn part1
+  [data]
+  (->> data
+       process-data
+       fill-in-areas
+       determine-biggest-area
+       (sort-by second)
+       reverse
+       (remove #(= ##Inf (second %)))))
