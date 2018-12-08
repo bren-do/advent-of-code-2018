@@ -33,22 +33,23 @@
   [output letter]
   (some #(= (str %) letter) output))
 
-(defn add-next-letter
+(defn next-letter?
+  [output letter deps]
+  (and (not (in-output? output letter))
+       (deps-satisfied? output deps)))
+
+(defn get-next-letter
   [output instructions]
   (loop [next-letter nil instructions instructions]
     (if next-letter
       next-letter
       (let [[letter deps] (first instructions)]
-        (recur (when (not (in-output? output letter))
-                 (cond
-                   (= (count deps) 0) letter
-                   (deps-satisfied? output deps) letter)) (rest instructions))))))
+        (recur (when (next-letter? output letter deps) letter) (rest instructions))))))
 
 (defn construct-string
   [instructions]
   (loop [output ""]
-    (let [constructed-string (str output (add-next-letter output instructions))]
-      (println (count constructed-string) (count instructions))
+    (let [constructed-string (str output (get-next-letter output instructions))]
       (if (= (count constructed-string) (count instructions))
         constructed-string
         (recur constructed-string)))))
@@ -70,3 +71,65 @@
        describe-dependencies
        sort-deps
        construct-string))
+
+
+(def task-length
+  (apply merge (map (fn [letter length]
+                      {(str letter) length}) "ABCDEFGHIJKLMNOPQRSTUVWXYZ" (range 1 (+ 1 26)))))
+
+(defn get-busy-workers
+  [workers]
+  (filter #(< 0 (second %)) workers))
+
+(defn get-finished-task
+  []
+  (println "GET-FINISHED-TASK NOT IMPLEMENTED"))
+
+(defn update-busy-workers-state
+  [output worker]
+  (println "UPDATE-BUSY-WORKERS-STATE NOT IMPLEMENTED")
+  #_(if-let [letter (get-finished-task worker)]
+      (update )))
+
+(defn being-worked-on?
+  [workers [letter deps]]
+  (println workers letter deps)
+  (filter (fn [[l d]]
+            (= l letter)) workers))
+
+
+(defn add-new-task
+  [task worker]
+  {task (get task-length task)})
+
+(defn get-available-tasks
+  [output workers dependency-graph]
+  (->> (filter (fn [[letter deps]] (next-letter? output letter deps)) dependency-graph)
+       (remove #(being-worked-on? workers %))
+       (map first)))
+
+(defn get-idle-workers
+  [workers]
+  (println "GET-IDLE-WORKERS NOT IMPLEMENTED"))
+
+(defn work
+  [dependency-graph workers]
+  (loop [second 0 workers workers output ""]
+    (let [tasks (get-available-tasks output workers dependency-graph)
+                                        ;idle-workers (get-idle-workers workers)
+                                        ;newly-tasked-workers (map add-new-task tasks idle-workers)
+                                        ;busy-workers (get-busy-workers workers)
+                                        ;[output updated-workers] (reduce #(update-busy-workers-state % output %2) {} busy-workers)
+          ]
+                                        ;[(inc second) output (concat newly-tasked-workers updated-workers)]
+      tasks
+      )))
+
+
+(defn part2
+  [text]
+  (-> text
+      parse-instructions
+      describe-dependencies
+      sort-deps
+      (work [["D" 3] ["E" 4]])))
