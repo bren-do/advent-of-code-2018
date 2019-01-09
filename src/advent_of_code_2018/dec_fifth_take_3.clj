@@ -1,4 +1,4 @@
-(ns advent-of-code-2018.dec-fifth)
+(ns advent-of-code-2018.dec-fifth-take-3)
 
 (def test-input
   (seq "dabAcCaCBAcCcaDA"))
@@ -6,17 +6,12 @@
 (def real-input
   (seq (clojure.string/trim (slurp (clojure.java.io/resource "dec_fifth.txt")))))
 
-(defn equal-case-insensitive?
+(defn reactable?
   [a b]
   (let [a-int-val (int a)
-        a-lower-case (if (< a-int-val 96)
-                       (+ a-int-val 32)
-                       a-int-val)
-        b-int-val (int b)
-        b-lower-case (if (< b-int-val 96)
-                       (+ b-int-val 32)
-                       b-int-val)]
-    (= a-lower-case b-lower-case)))
+        b-int-val (int b)]
+    (= 32 (Math/abs (- a-int-val b-int-val)))))
+
 
 (defn react
   [letters]
@@ -25,7 +20,7 @@
       (concat f letters)
       (let [fl (first letters)
             sl (second letters)]
-        (if (and (equal-case-insensitive? fl sl) (not (= fl sl)))
+        (if (reactable? fl sl)
           (recur f (drop 2 letters))
           (recur (conj f fl) (rest letters)))))))
 
